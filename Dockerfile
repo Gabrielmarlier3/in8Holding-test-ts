@@ -24,7 +24,7 @@ RUN apt-get update && apt-get install -y \
 
 WORKDIR /usr/src/app
 
-# Copiar os arquivos package.json e instalar dependências
+# Copiar arquivos package.json e instalar dependências
 COPY package*.json ./
 RUN npm install
 
@@ -34,8 +34,11 @@ COPY . .
 # Compilar o TypeScript
 RUN npm run build
 
+# Mudar o diretório de trabalho para a pasta dist
+WORKDIR /usr/src/app/dist
+
 # Expõe a porta 3000
 EXPOSE 3000
 
 # Rodar a aplicação
-CMD ["npm", "start"]
+CMD ["node", "index.js"]

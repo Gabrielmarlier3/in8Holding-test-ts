@@ -1,7 +1,7 @@
-import { connectToDatabase } from '../config/database';
 import { Op, Sequelize } from 'sequelize';
 import ProductModel from '../models/ProductModel';
 import { ProcessedData } from '../types/ProcessedData';
+import { ScrapeData } from "../types/ScrapeData";
 
 const ensureProductsTableExists = async (): Promise<void> => {
     await ProductModel.sync();
@@ -53,4 +53,16 @@ const getAllData = async (): Promise<any[]> => {
     return await ProductModel.findAll();
 };
 
-export { saveAllDataToDatabase, getFilteredData, getAllData };
+const filterExistingLinks = async (data: ScrapeData[]): Promise<ScrapeData[]> => {
+    const linksToScrape = await ProductModel.findAll({
+        where: {
+            link: {
+                [Op.notIn]: data.map(item => item.link),
+            },
+        },
+    })
+
+    return linksToScrape;
+};
+
+export { saveAllDataToDatabase, getFilteredData, getAllData, filterExistingLinks};

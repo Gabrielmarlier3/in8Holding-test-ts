@@ -12,9 +12,11 @@ checkEnvVariables();
 
 app.use('/notebook', notebookRoutes);
 
-app.listen(port, () => {
+const server = app.listen(port, () => {
     console.log(`Server is running at http://localhost:${port}`);
 });
+
+export { app }
 
 //sincroniza a cada 1 hora
 cron.schedule('0 * * * *', async () => {

@@ -2,10 +2,9 @@ import 'dotenv/config';
 import axios from 'axios';
 import { load } from 'cheerio';
 import puppeteer from 'puppeteer';
-import { getAllData } from './DatabaseService';
+import { getAllData, filterExistingLinks } from './DatabaseService';
 import { ScrapeData } from '../types/ScrapeData';
 import { StorageData, ProcessedData } from '../types/ProcessedData';
-
 /**
  * Função para buscar dados da página de laptops
  * @returns {Promise<ScrapeData[]>} - Array de objetos ScrapeData
@@ -21,7 +20,7 @@ const fetchData = async (): Promise<ScrapeData[]> => {
 
         // Coleta o número das páginas para percorrer todas
         const pageNumbers: number[] = [];
-        $initial('li.page-item a.page-link').each((index: number, element: cheerio.Element) => {
+        $initial('li.page-item a.page-link').each((index: number, element) => {
             const pageNumber = parseInt($initial(element).text(), 10);
             if (!isNaN(pageNumber)) {
                 pageNumbers.push(pageNumber);
@@ -48,14 +47,14 @@ const fetchData = async (): Promise<ScrapeData[]> => {
 
         // Mapeia os dados coletados em um array de ScrapeData
         const data: ScrapeData[] = [];
-        $('a.title').each((index: number, element: cheerio.Element) => {
+        $('a.title').each((index: number, element) => {
             data.push({
                 title: $(element).attr('title') || '',
                 link: $(element).attr('href') || '',
             });
         });
-
-        return data;
+        //Isso filtra todos os links que já existem no banco de dados, passando apenas os novos
+        return await filterExistingLinks(data);
     } catch (error) {
         console.error('Erro ao buscar os dados de laptops:', error);
         throw new Error('Erro ao buscar os dados de laptops');

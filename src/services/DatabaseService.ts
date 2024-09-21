@@ -54,13 +54,16 @@ const getAllData = async (): Promise<any[]> => {
 };
 
 const filterExistingLinks = async (data: ScrapeData[]): Promise<ScrapeData[]> => {
-    return await ProductModel.findAll({
+    const existingLinks = await ProductModel.findAll({
         where: {
             link: {
-                [Op.notIn]: data.map(item => item.link),
+                [Op.in]: data.map(item => item.link),
             },
         },
     });
-};
 
-export { saveAllDataToDatabase, getFilteredData, getAllData, filterExistingLinks};
+    const existingLinksSet = new Set(existingLinks.map(item => item.link));
+
+    return data.filter(item => !existingLinksSet.has(item.link));
+};
+export { saveAllDataToDatabase, getFilteredData, getAllData, filterExistingLinks , ensureProductsTableExists};

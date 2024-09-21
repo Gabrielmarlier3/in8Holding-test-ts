@@ -53,8 +53,10 @@ const fetchData = async (): Promise<ScrapeData[]> => {
                 link: $(element).attr('href') || '',
             });
         });
+        const filtredData = await filterExistingLinks(data);
+
         //Isso filtra todos os links que já existem no banco de dados, passando apenas os novos
-        return await filterExistingLinks(data);
+        return await filtredData
     } catch (error) {
         console.error('Erro ao buscar os dados de laptops:', error);
         throw new Error('Erro ao buscar os dados de laptops');

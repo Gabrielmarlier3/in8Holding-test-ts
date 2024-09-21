@@ -60,7 +60,7 @@ describe('getProducts integration test', () => {
         jest.clearAllMocks();
     });
 
-    it('Deve buscar no banco de dados os items do filtro e retornar', async () => {
+    it('Deve buscar no banco de dados os items do filtro e retornar com um sucesso', async () => {
         // Simulando o retorno de `getFilteredData`
         const fakeResponse = [
             {
@@ -78,9 +78,49 @@ describe('getProducts integration test', () => {
 
         // Fazendo a requisição
         const res = await request(app).get(`/notebook/get?item=${fakeFilteredData.filter}&orderBy=${fakeFilteredData.orderBy}`);
+
         // Verificando se a função foi chamada corretamente e a posição
         expect(getFilteredData).toHaveBeenCalledWith('Lenovo', 'ASC');
         expect(res.status).toBe(200);
         expect(res.body).toEqual(fakeResponse);
     });
+
+
+    it('Deve buscar no banco de dados, mas falhar', () => {
+        // Simulando o retorno de `getFilteredData`
+        ( getFilteredData as jest.Mock ).mockRejectedValue(new Error('Erro ao buscar dados no banco de dados'));
+
+        const fakeFilteredData = { filter: 'Lenovo', orderBy: 'ASC' };
+
+        // Fazendo a requisição
+        return request(app).get(`/notebook/get?item=${fakeFilteredData.filter}&orderBy=${fakeFilteredData.orderBy}`)
+            .expect(500)
+            .expect('Tente executar /sync para sincronizar os dados');
+
+    });
+
+
+    it('Deve retornar um erro 400 se o parâmetro orderBy for inválido', async () => {
+        const fakeFilteredData = { filter: 'Lenovo', orderBy: 'DESCX' };
+
+        const res = await request(app).get(`/notebook/get?item=${fakeFilteredData.filter}&orderBy=${fakeFilteredData.orderBy}`);
+
+        expect(res.status).toBe(400);
+        expect(res.text).toBe('O parâmetro orderBy deve ser "ASC" ou "DESC"');
+    });
+
+
+    it('Deve retornar um erro 404 se não encontrar nenhum item', async () => {
+        // Simulando o retorno de `getFilteredData`
+        ( getFilteredData as jest.Mock ).mockResolvedValue(null);
+
+        const fakeFilteredData = { filter: 'Lenovo', orderBy: 'ASC' };
+
+        const res = await request(app).get(`/notebook/get?item=${fakeFilteredData.filter}&orderBy=${fakeFilteredData.orderBy}`);
+
+        expect(res.status).toBe(404);
+        expect(res.text).toBe('Nenhum item encontrado, verifique os parametros de consulta');
+    });
+
+
 });

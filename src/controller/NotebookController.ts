@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { fetchData, processData } from '../services/WebScrapingService';
 import { saveAllDataToDatabase, getFilteredData } from '../services/DatabaseService';
+import ProductModel from "../models/ProductModel";
 
 // Sincroniza os dados do web scraping e os salva no banco de dados
 const syncData = async (req: Request, res: Response): Promise<Response> => {
@@ -25,12 +26,22 @@ const getProducts = async (req: Request, res: Response): Promise<Response> => {
     try {
         const filter = req.query.item as string || 'Lenovo';
         const orderBy = (req.query.orderBy as 'ASC' | 'DESC') || 'ASC';
-        const data = await getFilteredData(filter, orderBy);
+
+        if (orderBy !== 'ASC' && orderBy !== 'DESC') {
+            return res.status(400).send('O parâmetro orderBy deve ser "ASC" ou "DESC"');
+        }
+
+        const data: ProductModel[] = await getFilteredData(filter, orderBy);
+
+        if (!data){
+            return res.status(404).send('Nenhum item encontrado, verifique os parametros de consulta');
+        }
+
         return res.json(data);
     }
     catch (error) {
         console.error('Erro ao acessar o banco de dados:', error);
-        return res.status(500).send('Tente executar /sync para sincronizar os dados. Caso esteja usando o filtro, tente com outro valor');
+        return res.status(500).send('Tente executar /sync para sincronizar os dados');
     }
 };
 

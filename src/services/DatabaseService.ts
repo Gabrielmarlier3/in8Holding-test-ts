@@ -34,7 +34,7 @@ const saveAllDataToDatabase = async ( data: ProcessedData[] ): Promise<void> => 
     await Promise.all(insertPromises);
 };
 
-const getFilteredData = async ( itemFilter: string, orderBy: 'ASC' | 'DESC' = 'ASC' ): Promise<any[]> => {
+const getFilteredData = async ( itemFilter: string, orderBy: 'ASC' | 'DESC' = 'ASC' ): Promise<ProductModel[]> => {
     await ensureProductsTableExists();
 
     return await ProductModel.findAll({
@@ -54,15 +54,13 @@ const getAllData = async (): Promise<any[]> => {
 };
 
 const filterExistingLinks = async (data: ScrapeData[]): Promise<ScrapeData[]> => {
-    const linksToScrape = await ProductModel.findAll({
+    return await ProductModel.findAll({
         where: {
             link: {
                 [Op.notIn]: data.map(item => item.link),
             },
         },
-    })
-
-    return linksToScrape;
+    });
 };
 
 export { saveAllDataToDatabase, getFilteredData, getAllData, filterExistingLinks};

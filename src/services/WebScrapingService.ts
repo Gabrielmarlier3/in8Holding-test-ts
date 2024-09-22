@@ -2,9 +2,10 @@ import 'dotenv/config';
 import axios from 'axios';
 import { load } from 'cheerio';
 import puppeteer from 'puppeteer';
-import { getAllData, filterExistingLinks } from './DatabaseService';
+import { filterExistingLinks, getAllData } from './DatabaseService';
 import { ScrapeData } from '../types/ScrapeData';
-import { StorageData, ProcessedData } from '../types/ProcessedData';
+import { ProcessedData, StorageData } from '../types/ProcessedData';
+
 /**
  * Função para buscar dados da página de laptops
  * @returns {Promise<ScrapeData[]>} - Array de objetos ScrapeData
@@ -13,16 +14,16 @@ const fetchData = async (): Promise<ScrapeData[]> => {
     try {
         // Faz uma requisição inicial para obter os links das páginas
         const initialRes = await axios.get('https://webscraper.io/test-sites/e-commerce/static/computers/laptops');
-        if (!initialRes.data) {
+        if ( !initialRes.data ) {
             throw new Error('Web scraping inicial falhou, não retornou dados válidos');
         }
         const $initial = load(initialRes.data);
 
         // Coleta o número das páginas para percorrer todas
         const pageNumbers: number[] = [];
-        $initial('li.page-item a.page-link').each((index: number, element) => {
+        $initial('li.page-item a.page-link').each(( index: number, element ) => {
             const pageNumber = parseInt($initial(element).text(), 10);
-            if (!isNaN(pageNumber)) {
+            if ( !isNaN(pageNumber) ) {
                 pageNumbers.push(pageNumber);
             }
         });
@@ -31,14 +32,14 @@ const fetchData = async (): Promise<ScrapeData[]> => {
         const requests = [];
 
         // Faz uma requisição para cada página
-        for (let i = 1; i <= maxPageNumber; i++) {
+        for ( let i = 1; i <= maxPageNumber; i++ ) {
             requests.push(axios.get(`https://webscraper.io/test-sites/e-commerce/static/computers/laptops?page=${i}`));
         }
 
         // Aguarda a resposta de todas as páginas e concatena os dados
         const responses = await Promise.all(requests);
         const html = responses.map(response => {
-            if (!response.data) {
+            if ( !response.data ) {
                 throw new Error('Resposta de página inválida');
             }
             return response.data;
@@ -47,16 +48,15 @@ const fetchData = async (): Promise<ScrapeData[]> => {
 
         // Mapeia os dados coletados em um array de ScrapeData
         const data: ScrapeData[] = [];
-        $('a.title').each((index: number, element) => {
+        $('a.title').each(( index: number, element ) => {
             data.push({
                 title: $(element).attr('title') || '',
                 link: $(element).attr('href') || '',
             });
         });
-        const filtredData = await filterExistingLinks(data);
-
         //Isso filtra todos os links que já existem no banco de dados, passando apenas os novos
-        return await filtredData
+
+        return await filterExistingLinks(data);
     } catch (error) {
         console.error('Erro ao buscar os dados de laptops:', error);
         throw new Error('Erro ao buscar os dados de laptops');
@@ -69,14 +69,14 @@ const fetchData = async (): Promise<ScrapeData[]> => {
  * @param {number} [chunkSize=30] - Tamanho do chunk para limitar requisições simultâneas
  * @returns {Promise<ProcessedData[]>} - Array de objetos ProcessedData
  */
-const processData = async (data: ScrapeData[], chunkSize: number = 30): Promise<ProcessedData[]> => {
+const processData = async ( data: ScrapeData[], chunkSize: number = 30 ): Promise<ProcessedData[]> => {
     const results: ProcessedData[] = [];
     const ramUse = 3000;
 
     try {
         // Pega os dados existentes no banco de dados para evitar duplicatas
         const processedData = await getAllData();
-        const processedLinks = new Set(processedData.map((item: { link: string }) => item.link));
+        const processedLinks = new Set(processedData.map(( item: { link: string } ) => item.link));
 
         // Filtra os dados que ainda não foram processados
         const unprocessedData = data.filter(item => {
@@ -85,10 +85,10 @@ const processData = async (data: ScrapeData[], chunkSize: number = 30): Promise<
         });
 
         // Processa os dados em chunks para não sobrecarregar o Puppeteer
-        for (let i = 0; i < unprocessedData.length; i += chunkSize) {
+        for ( let i = 0; i < unprocessedData.length; i += chunkSize ) {
             const chunk = unprocessedData.slice(i, i + chunkSize);
 
-            const pageDataPromises = chunk.map(async (item) => {
+            const pageDataPromises = chunk.map(async ( item ) => {
                 const url = `https://webscraper.io${item.link}`;
                 const res = await axios.get(url);
                 const $ = load(res.data);
@@ -113,18 +113,18 @@ const processData = async (data: ScrapeData[], chunkSize: number = 30): Promise<
                 await page.goto(url);
 
                 // Pega os botões de capacidade e seus preços
-                const swatches = await page.$$eval('.swatches button:not([disabled])', (buttons: Element[]) => buttons.map(btn => ({
-                    capacity: parseInt((btn as HTMLButtonElement).value, 10),
-                    isActive: (btn as HTMLButtonElement).classList.contains('active')
-                })));
+                const swatches = await page.$$eval('.swatches button:not([disabled])', ( buttons: Element[] ) => buttons.map(btn => ( {
+                    capacity: parseInt(( btn as HTMLButtonElement ).value, 10),
+                    isActive: ( btn as HTMLButtonElement ).classList.contains('active')
+                } )));
 
                 const description = $('p.description.card-text').text().trim();
 
                 // Coleta o preço conforme a capacidade
-                for (const swatch of swatches) {
+                for ( const swatch of swatches ) {
                     await page.click(`.swatches button[value="${swatch.capacity}"]`);
                     await page.waitForSelector('.price.float-end.pull-right');
-                    const price = await page.$eval('.price.float-end.pull-right', (el: Element) => {
+                    const price = await page.$eval('.price.float-end.pull-right', ( el: Element ) => {
                         const text = el.textContent?.trim().replace('$', '');
                         return text ? parseFloat(text) : 0;
                     });

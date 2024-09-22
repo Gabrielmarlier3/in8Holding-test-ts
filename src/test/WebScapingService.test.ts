@@ -1,8 +1,8 @@
-import { fetchData } from "./WebScrapingService";
+import { fetchData } from "../services/WebScrapingService";
 
 //todo: terminar esse aqui, e verificar se tem como deixar os outros melhores
 
-jest.mock('./DatabaseService');
+jest.mock('../services/DatabaseService');
 
 describe('WebScrapingService', () => {
     it('Verifica se fetchData retorna os dados corretos', async () => {

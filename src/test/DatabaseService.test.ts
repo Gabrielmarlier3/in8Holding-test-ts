@@ -1,9 +1,9 @@
 import ProductModel from '../models/ProductModel';
-import { ensureProductsTableExists, filterExistingLinks, getAllData, getFilteredData } from './DatabaseService';
+import { ensureProductsTableExists, filterExistingLinks, getAllData, getFilteredData } from '../services/DatabaseService';
 import sequelize from "../config/database";
 import { Model } from "sequelize";
 
-jest.mock('./DatabaseService', () => {
+jest.mock('../services/DatabaseService', () => {
     const actualModule = jest.requireActual('./DatabaseService');
     return {
         //consigo assim mockar somente as funçoes que preciso

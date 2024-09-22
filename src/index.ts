@@ -2,7 +2,7 @@ import express from 'express';
 import { checkEnvVariables } from "./config/envConfig";
 import cron from "node-cron";
 import { fetchData, processData } from "./services/WebScrapingService";
-import notebookRoutes from './routes/notebook';
+import notebookRoutes from './routes/notebookRoutes';
 
 
 const app = express();

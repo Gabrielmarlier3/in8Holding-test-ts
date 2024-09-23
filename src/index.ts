@@ -14,7 +14,7 @@ checkEnvVariables();
 
 app.use('/notebook', notebookRoutes);
 
-async function startServer() {
+async function startServer(){
     try {
         checkEnvVariables();
         await checkDatabaseConnection();
@@ -28,7 +28,6 @@ async function startServer() {
 }
 
 startServer();
-export { app }
 
 //sincroniza a cada 1 hora
 cron.schedule('0 * * * *', async () => {
@@ -36,4 +35,8 @@ cron.schedule('0 * * * *', async () => {
     const data = await fetchData();
     await processData(data)
 });
+
+
+export { app }
+
 

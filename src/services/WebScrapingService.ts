@@ -2,7 +2,7 @@ import 'dotenv/config';
 import axios from 'axios';
 import { load } from 'cheerio';
 import puppeteer from 'puppeteer';
-import { filterExistingLinks, getAllData } from './DatabaseService';
+import { filterExistingLinks } from './DatabaseService';
 import { IScrapeData } from '../types/IScrapeData';
 import { IProcessedData, IStorageData } from '../types/IProcessedData';
 
@@ -10,7 +10,7 @@ import { IProcessedData, IStorageData } from '../types/IProcessedData';
  * Função para buscar dados da página de laptops
  * @returns {Promise<IScrapeData[]>} - Array de objetos ScrapeData
  */
-const fetchData = async (): Promise<IScrapeData[]> => {
+async function fetchData(): Promise<IScrapeData[]>{
     try {
         // Faz uma requisição inicial para obter os links das páginas
         const initialRes = await axios.get('https://webscraper.io/test-sites/e-commerce/static/computers/laptops');
@@ -61,7 +61,7 @@ const fetchData = async (): Promise<IScrapeData[]> => {
         console.error('Erro ao buscar os dados de laptops:', error);
         throw new Error('Erro ao buscar os dados de laptops');
     }
-};
+}
 
 /**
  * Função para processar os dados coletados e extrair informações detalhadas usando Puppeteer
@@ -69,24 +69,15 @@ const fetchData = async (): Promise<IScrapeData[]> => {
  * @param {number} [chunkSize=30] - Tamanho do chunk para limitar requisições simultâneas
  * @returns {Promise<IProcessedData[]>} - Array de objetos ProcessedData
  */
-const processData = async ( data: IScrapeData[], chunkSize: number = 30 ): Promise<IProcessedData[]> => {
+//esse data so contem items que não existem no banco de dados
+async function processData( data: IScrapeData[], chunkSize: number = 30 ): Promise<IProcessedData[]>{
     const results: IProcessedData[] = [];
     const ramUse = 3000;
 
     try {
-        // Pega os dados existentes no banco de dados para evitar duplicatas
-        const processedData = await getAllData();
-        const processedLinks = new Set(processedData.map(( item: { link: string } ) => item.link));
-
-        // Filtra os dados que ainda não foram processados
-        const unprocessedData = data.filter(item => {
-            const url = `https://webscraper.io${item.link}`;
-            return !processedLinks.has(url);
-        });
-
         // Processa os dados em chunks para não sobrecarregar o Puppeteer
-        for ( let i = 0; i < unprocessedData.length; i += chunkSize ) {
-            const chunk = unprocessedData.slice(i, i + chunkSize);
+        for ( let i = 0; i < data.length; i += chunkSize ) {
+            const chunk = data.slice(i, i + chunkSize);
 
             const pageDataPromises = chunk.map(async ( item ) => {
                 const url = `https://webscraper.io${item.link}`;
@@ -134,15 +125,11 @@ const processData = async ( data: IScrapeData[], chunkSize: number = 30 ): Promi
                 await browser.close();
 
                 // Coleta o número de avaliações e a quantidade de estrelas
-                let reviewCount = 0;
-                let starCount = 0;
-                try {
-                    const reviewText = $('.ratings .review-count').text().trim();
-                    reviewCount = parseInt(reviewText.match(/\d+/)?.[0] || '0', 10);
-                    starCount = $('.ratings .ws-icon.ws-icon-star').length;
-                } catch (error) {
-                    console.error('Erro ao processar reviews/estrelas:', error);
-                }
+                let reviewCount: number;
+                let starCount: number;
+                const reviewText = $('.ratings .review-count').text().trim();
+                reviewCount = parseInt(reviewText.match(/\d+/)?.[0] || '0', 10);
+                starCount = $('.ratings .ws-icon.ws-icon-star').length;
 
                 return {
                     title: item.title,
@@ -163,6 +150,6 @@ const processData = async ( data: IScrapeData[], chunkSize: number = 30 ): Promi
         console.error('Erro ao processar os dados:', error);
         throw new Error('Erro ao processar os dados');
     }
-};
+}
 
 export { fetchData, processData };

@@ -3,14 +3,14 @@ import ProductModel from '../models/ProductModel';
 import { IProcessedData } from '../types/IProcessedData';
 import { IScrapeData } from "../types/IScrapeData";
 
-const ensureProductsTableExists = async (): Promise<void> => {
+async function ensureProductsTableExists(): Promise<void>{
     await ProductModel.sync();
-};
+}
 
-const saveAllDataToDatabase = async ( data: IProcessedData[] ): Promise<void> => {
+async function saveAllDataToDatabase(data: IProcessedData[]): Promise<void>{
     await ensureProductsTableExists();  // Verifica se a tabela existe ou é criada
 
-    const insertPromises = data.map(async ( item ) => {
+    const insertPromises = data.map(async (item) => {
         const [product, created] = await ProductModel.findOrCreate({
             where: { title: item.title, link: item.link },
             defaults: {
@@ -32,9 +32,9 @@ const saveAllDataToDatabase = async ( data: IProcessedData[] ): Promise<void> =>
     });
 
     await Promise.all(insertPromises);
-};
+}
 
-const getFilteredData = async ( itemFilter: string, orderBy: 'ASC' | 'DESC' = 'ASC' ): Promise<ProductModel[]> => {
+async function getFilteredData(itemFilter: string, orderBy: 'ASC' | 'DESC' = 'ASC'): Promise<ProductModel[]>{
     await ensureProductsTableExists();
 
     return await ProductModel.findAll({
@@ -45,15 +45,9 @@ const getFilteredData = async ( itemFilter: string, orderBy: 'ASC' | 'DESC' = 'A
         },
         order: [[Sequelize.literal('CAST(JSON_UNQUOTE(JSON_EXTRACT(swatchesPrices, \'$[0].price\')) AS DECIMAL(10,2))'), orderBy]],
     });
-};
+}
 
-const getAllData = async (): Promise<any[]> => {
-    await ensureProductsTableExists();
-
-    return await ProductModel.findAll();
-};
-
-const filterExistingLinks = async (data: IScrapeData[]): Promise<IScrapeData[]> => {
+async function filterExistingLinks(data: IScrapeData[]): Promise<IScrapeData[]>{
     const existingLinks = await ProductModel.findAll({
         where: {
             link: {
@@ -65,5 +59,6 @@ const filterExistingLinks = async (data: IScrapeData[]): Promise<IScrapeData[]> 
     const existingLinksSet = new Set(existingLinks.map(item => item.link));
 
     return data.filter(item => !existingLinksSet.has(item.link));
-};
-export { saveAllDataToDatabase, getFilteredData, getAllData, filterExistingLinks , ensureProductsTableExists};
+}
+
+export { saveAllDataToDatabase, getFilteredData, filterExistingLinks, ensureProductsTableExists };

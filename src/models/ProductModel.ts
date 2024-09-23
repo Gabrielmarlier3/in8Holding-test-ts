@@ -1,5 +1,5 @@
 import { Model, DataTypes } from 'sequelize';
-import sequelize from '../config/database'; // Certifique-se de que isso aponta para a instância correta do Sequelize
+import sequelize from '../config/database';
 
 class ProductModel extends Model {
     public id!: number;

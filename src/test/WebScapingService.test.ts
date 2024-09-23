@@ -12,5 +12,5 @@ describe('Conjunto de teste no WebScrapingService', () => {
         expect(data).not.toBeNull();
     });
 
-    it
+    it('verifica se ')
 });

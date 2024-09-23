@@ -14,21 +14,9 @@ const sequelize = new Sequelize(
     }
 );
 
-export const connectToDatabase = async (): Promise<Sequelize> => {
-    try {
-        await sequelize.authenticate();
-        console.log('Connected to MySQL database');
-        return sequelize;
-    } catch (error) {
-        console.error('Error connecting to MySQL database:', error);
-        process.exit(1);
-    }
-};
-
-export default sequelize;
 
 
-export const checkDatabaseConnection = async () => {
+export async function checkDatabaseConnection(): Promise<void> {
     try {
         await sequelize.authenticate();
         console.log('Conexão bem sucedida.');
@@ -45,4 +33,6 @@ export const checkDatabaseConnection = async () => {
 
         }
     }, 1000);
-};
+}
+
+export default sequelize;

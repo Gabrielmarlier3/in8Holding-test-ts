@@ -51,7 +51,7 @@ describe('Conjunto de testes em NotebookController', () => {
         const response = await request(app).get('/notebook/sync?chunkSize=100');
 
         expect(response.status).toBe(500);
-        expect(response.text).toBe('Erro ao acessar a página web');
+        expect(response.text).toBe('Erro, verifique o readme.md para mais informações');
     });
 
     it('Deve buscar no banco de dados os items do filtro e retornar com sucesso', async () => {

@@ -11,14 +11,23 @@ const port = 3000;
 
 checkEnvVariables();
 
-checkDatabaseConnection();
 
 app.use('/notebook', notebookRoutes);
 
-const server = app.listen(port, () => {
-    console.log(`Server is running at http://localhost:${port}`);
-});
+async function startServer() {
+    try {
+        checkEnvVariables();
+        await checkDatabaseConnection();
+        const server = app.listen(port, () => {
+            console.log(`Server is running at http://localhost:${port}`);
+        });
+    } catch (error) {
+        console.error('Failed to start server:', error);
+        process.exit(1);
+    }
+}
 
+startServer();
 export { app }
 
 //sincroniza a cada 1 hora

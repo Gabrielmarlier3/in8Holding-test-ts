@@ -1,5 +1,5 @@
 import ProductModel from '../models/ProductModel';
-import { ensureProductsTableExists, filterExistingLinks, getAllData, getFilteredData } from '../services/DatabaseService';
+import { ensureProductsTableExists, filterExistingLinks, getFilteredData } from '../services/DatabaseService';
 import sequelize from "../config/database";
 import { Model } from "sequelize";
 
@@ -48,39 +48,6 @@ describe('Conjunto de teste no DatabaseService', () => {
 
         expect(getFilteredData).toHaveBeenCalledWith('Teste', 'ASC');
         expect(data).not.toBeNull();
-    });
-
-    it('Verifica se getAllData retorna os dados corretos', async () => {
-        const mockData = [
-            {
-                title: 'Teste',
-                link: 'http://teste.com',
-                description: 'Teste',
-                swatchesPrices: 'Teste',
-                reviewCount: 0,
-                starCount: 0,
-            },
-            {
-                title: 'Teste1',
-                link: 'http://teste1.com',
-                description: 'Teste1',
-                swatchesPrices: 'Teste1',
-                reviewCount: 1,
-                starCount: 1,
-            },
-
-        ];
-
-        const dataMock = jest.spyOn(ProductModel, 'findAll').mockResolvedValue(mockData as any);
-
-        const result = await getAllData();
-
-        expect(dataMock).toHaveBeenCalled();
-
-        expect(result).toEqual(mockData);
-        expect(Array.isArray(result)).toBe(true);
-
-        dataMock.mockRestore();
     });
 
     it('Verifica se filterExistingLinks retorna os dados corretos', async () => {

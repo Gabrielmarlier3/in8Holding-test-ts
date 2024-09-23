@@ -26,3 +26,23 @@ export const connectToDatabase = async (): Promise<Sequelize> => {
 };
 
 export default sequelize;
+
+
+export const checkDatabaseConnection = async () => {
+    try {
+        await sequelize.authenticate();
+        console.log('Conexão bem sucedida.');
+    } catch (error) {
+        console.log('Banco de dados desligado, digite docker-compose up --build no terminal');
+    }
+
+    const intervalId = setInterval(async () => {
+        try {
+            await sequelize.authenticate();
+            console.log('Conexão bem sucedida.');
+            clearInterval(intervalId);
+        } catch (error) {
+
+        }
+    }, 1000);
+};

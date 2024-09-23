@@ -3,12 +3,15 @@ import { checkEnvVariables } from "./config/envConfig";
 import cron from "node-cron";
 import { fetchData, processData } from "./services/WebScrapingService";
 import notebookRoutes from './routes/notebookRoutes';
+import { checkDatabaseConnection } from "./config/database";
 
 
 const app = express();
 const port = 3000;
 
 checkEnvVariables();
+
+checkDatabaseConnection();
 
 app.use('/notebook', notebookRoutes);
 

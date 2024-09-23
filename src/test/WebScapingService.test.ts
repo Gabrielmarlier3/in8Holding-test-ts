@@ -4,7 +4,7 @@ import { fetchData } from "../services/WebScrapingService";
 
 jest.mock('../services/DatabaseService');
 
-describe('WebScrapingService', () => {
+describe('Conjunto de teste no WebScrapingService', () => {
     it('Verifica se fetchData retorna os dados corretos', async () => {
 
         const data = await fetchData();

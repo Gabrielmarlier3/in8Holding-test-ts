@@ -1,13 +1,13 @@
 import { Op, Sequelize } from 'sequelize';
 import ProductModel from '../models/ProductModel';
-import { ProcessedData } from '../types/ProcessedData';
-import { ScrapeData } from "../types/ScrapeData";
+import { IProcessedData } from '../types/IProcessedData';
+import { IScrapeData } from "../types/IScrapeData";
 
 const ensureProductsTableExists = async (): Promise<void> => {
     await ProductModel.sync();
 };
 
-const saveAllDataToDatabase = async ( data: ProcessedData[] ): Promise<void> => {
+const saveAllDataToDatabase = async ( data: IProcessedData[] ): Promise<void> => {
     await ensureProductsTableExists();  // Verifica se a tabela existe ou é criada
 
     const insertPromises = data.map(async ( item ) => {
@@ -53,7 +53,7 @@ const getAllData = async (): Promise<any[]> => {
     return await ProductModel.findAll();
 };
 
-const filterExistingLinks = async (data: ScrapeData[]): Promise<ScrapeData[]> => {
+const filterExistingLinks = async (data: IScrapeData[]): Promise<IScrapeData[]> => {
     const existingLinks = await ProductModel.findAll({
         where: {
             link: {

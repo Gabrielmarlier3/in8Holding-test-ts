@@ -1,4 +1,4 @@
-export interface ScrapeData {
+export interface IScrapeData {
     title: string;
     link: string;
 }

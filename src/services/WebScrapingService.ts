@@ -3,14 +3,14 @@ import axios from 'axios';
 import { load } from 'cheerio';
 import puppeteer from 'puppeteer';
 import { filterExistingLinks, getAllData } from './DatabaseService';
-import { ScrapeData } from '../types/ScrapeData';
-import { ProcessedData, StorageData } from '../types/ProcessedData';
+import { IScrapeData } from '../types/IScrapeData';
+import { IProcessedData, IStorageData } from '../types/IProcessedData';
 
 /**
  * Função para buscar dados da página de laptops
- * @returns {Promise<ScrapeData[]>} - Array de objetos ScrapeData
+ * @returns {Promise<IScrapeData[]>} - Array de objetos ScrapeData
  */
-const fetchData = async (): Promise<ScrapeData[]> => {
+const fetchData = async (): Promise<IScrapeData[]> => {
     try {
         // Faz uma requisição inicial para obter os links das páginas
         const initialRes = await axios.get('https://webscraper.io/test-sites/e-commerce/static/computers/laptops');
@@ -47,7 +47,7 @@ const fetchData = async (): Promise<ScrapeData[]> => {
         const $ = load(html);
 
         // Mapeia os dados coletados em um array de ScrapeData
-        const data: ScrapeData[] = [];
+        const data: IScrapeData[] = [];
         $('a.title').each(( index: number, element ) => {
             data.push({
                 title: $(element).attr('title') || '',
@@ -65,12 +65,12 @@ const fetchData = async (): Promise<ScrapeData[]> => {
 
 /**
  * Função para processar os dados coletados e extrair informações detalhadas usando Puppeteer
- * @param {ScrapeData[]} data - Array de dados coletados
+ * @param {IScrapeData[]} data - Array de dados coletados
  * @param {number} [chunkSize=30] - Tamanho do chunk para limitar requisições simultâneas
- * @returns {Promise<ProcessedData[]>} - Array de objetos ProcessedData
+ * @returns {Promise<IProcessedData[]>} - Array de objetos ProcessedData
  */
-const processData = async ( data: ScrapeData[], chunkSize: number = 30 ): Promise<ProcessedData[]> => {
-    const results: ProcessedData[] = [];
+const processData = async ( data: IScrapeData[], chunkSize: number = 30 ): Promise<IProcessedData[]> => {
+    const results: IProcessedData[] = [];
     const ramUse = 3000;
 
     try {
@@ -93,7 +93,7 @@ const processData = async ( data: ScrapeData[], chunkSize: number = 30 ): Promis
                 const res = await axios.get(url);
                 const $ = load(res.data);
 
-                const swatchesPrices: StorageData[] = [];
+                const swatchesPrices: IStorageData[] = [];
                 const ramUsePerTab = ramUse / chunk.length;
 
                 // Inicializa o navegador com Puppeteer

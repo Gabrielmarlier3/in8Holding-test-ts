@@ -3,17 +3,17 @@ import { app } from '../index';
 import { getFilteredData, saveAllDataToDatabase } from '../services/DatabaseService';
 import { fetchData, processData } from '../services/WebScrapingService';
 
-jest.mock('../services/WebScrapingService', () => ( {
+jest.mock('../services/WebScrapingService', () => ({
     fetchData: jest.fn(),
     processData: jest.fn(),
-} ));
+}));
 
-jest.mock('../services/DatabaseService', () => ( {
+jest.mock('../services/DatabaseService', () => ({
     saveAllDataToDatabase: jest.fn(),
     getFilteredData: jest.fn(),
-} ));
+}));
 
-describe('syncData integration test', () => {
+describe('Conjunto de testes em NotebookController', () => {
     afterEach(() => {
         jest.clearAllMocks();
     });
@@ -27,9 +27,9 @@ describe('syncData integration test', () => {
         ];
 
         // Configurando valores de retorno dos mocks
-        ( fetchData as jest.Mock ).mockResolvedValue(fakeData);
-        ( processData as jest.Mock ).mockResolvedValue(processedFakeData);
-        ( saveAllDataToDatabase as jest.Mock ).mockResolvedValue(true);
+        (fetchData as jest.Mock).mockResolvedValue(fakeData);
+        (processData as jest.Mock).mockResolvedValue(processedFakeData);
+        (saveAllDataToDatabase as jest.Mock).mockResolvedValue(true);
 
         // Fazendo a requisição
         const response = await request(app).get('/notebook/sync?chunkSize=100');
@@ -46,21 +46,15 @@ describe('syncData integration test', () => {
 
     it('deve retornar um erro 500 se houver um erro', async () => {
         // Simulando um erro ao buscar dados
-        ( fetchData as jest.Mock ).mockRejectedValue(new Error('Web scraping inicial falhou, não retornou dados válidos'));
+        (fetchData as jest.Mock).mockRejectedValue(new Error('Web scraping inicial falhou, não retornou dados válidos'));
 
         const response = await request(app).get('/notebook/sync?chunkSize=100');
 
         expect(response.status).toBe(500);
         expect(response.text).toBe('Erro ao acessar a página web');
     });
-});
 
-describe('getProducts integration test', () => {
-    afterEach(() => {
-        jest.clearAllMocks();
-    });
-
-    it('Deve buscar no banco de dados os items do filtro e retornar com um sucesso', async () => {
+    it('Deve buscar no banco de dados os items do filtro e retornar com sucesso', async () => {
         // Simulando o retorno de `getFilteredData`
         const fakeResponse = [
             {
@@ -72,33 +66,30 @@ describe('getProducts integration test', () => {
                 starCount: 5,
             }
         ];
-        ( getFilteredData as jest.Mock ).mockResolvedValue(fakeResponse);
+        (getFilteredData as jest.Mock).mockResolvedValue(fakeResponse);
 
         const fakeFilteredData = { filter: 'Lenovo', orderBy: 'ASC' };
 
         // Fazendo a requisição
         const res = await request(app).get(`/notebook/get?item=${fakeFilteredData.filter}&orderBy=${fakeFilteredData.orderBy}`);
 
-        // Verificando se a função foi chamada corretamente e a posição
+        // Verificando se a função foi chamada corretamente
         expect(getFilteredData).toHaveBeenCalledWith('Lenovo', 'ASC');
         expect(res.status).toBe(200);
         expect(res.body).toEqual(fakeResponse);
     });
 
-
-    it('Deve buscar no banco de dados, mas falhar', () => {
-        // Simulando o retorno de `getFilteredData`
-        ( getFilteredData as jest.Mock ).mockRejectedValue(new Error('Erro ao buscar dados no banco de dados'));
+    it('Deve retornar erro ao buscar no banco de dados', async () => {
+        // Simulando um erro ao buscar dados no banco
+        (getFilteredData as jest.Mock).mockRejectedValue(new Error('Erro ao buscar dados no banco de dados'));
 
         const fakeFilteredData = { filter: 'Lenovo', orderBy: 'ASC' };
 
-        // Fazendo a requisição
-        return request(app).get(`/notebook/get?item=${fakeFilteredData.filter}&orderBy=${fakeFilteredData.orderBy}`)
-            .expect(500)
-            .expect('Tente executar /sync para sincronizar os dados');
+        const res = await request(app).get(`/notebook/get?item=${fakeFilteredData.filter}&orderBy=${fakeFilteredData.orderBy}`);
 
+        expect(res.status).toBe(500);
+        expect(res.text).toBe('Tente executar /sync para sincronizar os dados');
     });
-
 
     it('Deve retornar um erro 400 se o parâmetro orderBy for inválido', async () => {
         const fakeFilteredData = { filter: 'Lenovo', orderBy: 'DESCX' };
@@ -109,10 +100,9 @@ describe('getProducts integration test', () => {
         expect(res.text).toBe('O parâmetro orderBy deve ser "ASC" ou "DESC"');
     });
 
-
     it('Deve retornar um erro 404 se não encontrar nenhum item', async () => {
-        // Simulando o retorno de `getFilteredData`
-        ( getFilteredData as jest.Mock ).mockResolvedValue(null);
+        // Simulando que nenhum item foi encontrado
+        (getFilteredData as jest.Mock).mockResolvedValue(null);
 
         const fakeFilteredData = { filter: 'Lenovo', orderBy: 'ASC' };
 
@@ -121,6 +111,4 @@ describe('getProducts integration test', () => {
         expect(res.status).toBe(404);
         expect(res.text).toBe('Nenhum item encontrado, verifique os parametros de consulta');
     });
-
-
 });

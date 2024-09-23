@@ -4,7 +4,7 @@ import sequelize from "../config/database";
 import { Model } from "sequelize";
 
 jest.mock('../services/DatabaseService', () => {
-    const actualModule = jest.requireActual('./DatabaseService');
+    const actualModule = jest.requireActual('../services/DatabaseService');
     return {
         //consigo assim mockar somente as funçoes que preciso
         ...actualModule,
@@ -21,7 +21,7 @@ jest.mock('../services/DatabaseService', () => {
     };
 });
 
-describe('DatabaseService', () => {
+describe('Conjunto de teste no DatabaseService', () => {
     beforeAll(async () => {
         await ProductModel.sync();
     });

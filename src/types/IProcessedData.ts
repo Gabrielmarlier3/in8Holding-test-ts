@@ -1,13 +1,13 @@
-export interface ProcessedData {
+export interface IProcessedData {
     title: string;
     link: string;
     description: string;
-    swatchesPrices: StorageData[];
+    swatchesPrices: IStorageData[];
     reviewCount: number;
     starCount: number;
 }
 
-export interface StorageData {
+export interface IStorageData {
     price: number;
     capacity: number;
 }

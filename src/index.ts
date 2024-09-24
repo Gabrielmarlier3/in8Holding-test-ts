@@ -29,8 +29,8 @@ async function startServer(){
 
 startServer();
 
-//sincroniza a cada 1 hora
-cron.schedule('0 * * * *', async () => {
+//sincroniza as meia-noite hora
+cron.schedule('0 0 * * *', async () => {
     console.log('Updating products...');
     const data = await fetchData();
     await processData(data)

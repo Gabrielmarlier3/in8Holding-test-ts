@@ -101,7 +101,7 @@ async function processData( data: IScrapeData[], chunkSize: number = 30 ): Promi
                 });
 
                 const page = await browser.newPage();
-                await page.goto(url);
+                await page.goto(url, { timeout: 60000 });
 
                 // Pega os botões de capacidade e seus preços
                 const swatches = await page.$$eval('.swatches button:not([disabled])', ( buttons: Element[] ) => buttons.map(btn => ( {

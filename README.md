@@ -1,10 +1,10 @@
 # Projeto de Teste In8 Holding (Versão TypeScript)
 
-Este projeto é um serviço de web scraping desenvolvido em **TypeScript** que coleta dados de laptops de um site de e-commerce, processa essas informações e as armazena para análise. Ele também fornece uma API para acessar e filtrar os dados armazenados.
+Este projeto é para um teste da in8Holding que consiste um serviço de web scraping desenvolvido em **TypeScript** que coleta dados de laptops de um site de e-commerce, processa essas informações e as armazena para análise. Ele também fornece uma API para acessar e filtrar os dados armazenados.
 
 ## Compatibilidade
 
-Este projeto foi desenvolvido e testado em um ambiente **Windows**, mas também foi executado com sucesso em um **MacBook Pro M3 Max**. Deve funcionar em ambientes **Linux** também, embora não tenha sido explicitamente testado lá.
+Este projeto foi desenvolvido e testado em um ambiente **Windows**, mas também foi executado com sucesso em um **MacBook Pro M3 Max**. Deve funcionar em ambientes **Linux** também, embora não tenha sido testado lá.
 
 ## Tecnologias Utilizadas
 

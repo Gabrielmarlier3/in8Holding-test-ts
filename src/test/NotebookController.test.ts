@@ -81,6 +81,6 @@ describe('Testes do NotebookController', () => {
         const response = await request(app).get('/notebook/get?item=Lenovo&orderBy=ASC');
 
         expect(response.status).toBe(404);
-        expect(response.text).toBe('Nenhum item encontrado, verifique os parametros de consulta');
+        expect(response.text).toBe('Nenhum item encontrado, verifique os parametros de consulta, ou execute /sync para sincronizar os dados');
     });
 });

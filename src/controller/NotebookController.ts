@@ -32,8 +32,8 @@ async function getProducts(req: Request, res: Response): Promise<Response>{
 
         const data: ProductModel[] = await getFilteredData(filter, orderBy);
 
-        if ( !data ) {
-            return res.status(404).send('Nenhum item encontrado, verifique os parametros de consulta');
+        if ( !data || data.length === 0 ) {
+            return res.status(404).send('Nenhum item encontrado, verifique os parametros de consulta, ou execute /sync para sincronizar os dados');
         }
 
         return res.json(data);

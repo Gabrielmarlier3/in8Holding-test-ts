@@ -35,13 +35,13 @@ Este projeto foi desenvolvido e testado em um ambiente **Windows**, mas também 
 1. **Clone o repositório:**
 
    ```bash
-   git clone https://github.com/seu-usuario/seu-repositorio.git
+   git https://github.com/Gabrielmarlier3/in8Holding-test-ts.git
    ```
 
 2. **Navegue até o diretório do projeto:**
 
    ```bash
-   cd seu-repositorio
+   cd in8Holding-test-ts
    ```
 
 3. **Instale as dependências:**

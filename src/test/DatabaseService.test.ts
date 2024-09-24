@@ -1,5 +1,5 @@
 import ProductModel from '../models/ProductModel';
-import { ensureProductsTableExists, filterExistingLinks, getFilteredData } from '../services/DatabaseService';
+import { ensureProductsTableExists, getFilteredData } from '../services/DatabaseService';
 import sequelize from "../config/database";
 import { Model } from "sequelize";
 
@@ -49,19 +49,5 @@ describe('Conjunto de teste no DatabaseService', () => {
         expect(getFilteredData).toHaveBeenCalledWith('Teste', 'ASC');
         expect(data).not.toBeNull();
     });
-
-    it('Verifica se filterExistingLinks retorna os dados corretos', async () => {
-        const scrapeData = [
-            { title: 'Teste', link: 'http://teste.com' },
-            { title: 'Teste1', link: 'http://teste1.com' }
-        ];
-
-        const data = await filterExistingLinks(scrapeData);
-
-        expect(data).not.toBeNull();
-        // Se o link não existir, deve retornar o mesmo array
-        expect(data).toEqual(scrapeData);
-    });
-
 
 });

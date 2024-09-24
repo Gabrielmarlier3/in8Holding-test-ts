@@ -2,7 +2,6 @@ import 'dotenv/config';
 import axios from 'axios';
 import { load } from 'cheerio';
 import puppeteer from 'puppeteer';
-import { filterExistingLinks } from './DatabaseService';
 import { IScrapeData } from '../types/IScrapeData';
 import { IProcessedData, IStorageData } from '../types/IProcessedData';
 
@@ -56,7 +55,7 @@ async function fetchData(): Promise<IScrapeData[]>{
         });
         //Isso filtra todos os links que já existem no banco de dados, passando apenas os novos
 
-        return await filterExistingLinks(data);
+        return data;
     } catch (error) {
         console.error('Erro ao buscar os dados de laptops:', error);
         throw new Error('Erro ao buscar os dados de laptops');

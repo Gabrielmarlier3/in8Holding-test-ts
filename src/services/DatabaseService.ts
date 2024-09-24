@@ -47,19 +47,4 @@ async function getFilteredData(itemFilter: string, orderBy: 'ASC' | 'DESC' = 'AS
     });
 }
 
-async function filterExistingLinks(data: IScrapeData[]): Promise<IScrapeData[]>{
-    await ensureProductsTableExists();  // Verifica se a tabela existe ou é criada
-    const existingLinks = await ProductModel.findAll({
-        where: {
-            link: {
-                [Op.in]: data.map(item => item.link),
-            },
-        },
-    });
-
-    const existingLinksSet = new Set(existingLinks.map(item => item.link));
-
-    return data.filter(item => !existingLinksSet.has(item.link));
-}
-
-export { saveAllDataToDatabase, getFilteredData, filterExistingLinks, ensureProductsTableExists };
+export { saveAllDataToDatabase, getFilteredData, ensureProductsTableExists };

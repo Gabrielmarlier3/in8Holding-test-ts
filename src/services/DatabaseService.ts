@@ -8,7 +8,7 @@ async function ensureProductsTableExists(): Promise<void>{
 }
 
 async function saveAllDataToDatabase(data: IProcessedData[]): Promise<void>{
-    await ensureProductsTableExists();  // Verifica se a tabela existe ou é criada
+    await ensureProductsTableExists();
 
     const insertPromises = data.map(async (item) => {
         const [product, created] = await ProductModel.findOrCreate({
@@ -48,6 +48,7 @@ async function getFilteredData(itemFilter: string, orderBy: 'ASC' | 'DESC' = 'AS
 }
 
 async function filterExistingLinks(data: IScrapeData[]): Promise<IScrapeData[]>{
+    await ensureProductsTableExists();  // Verifica se a tabela existe ou é criada
     const existingLinks = await ProductModel.findAll({
         where: {
             link: {

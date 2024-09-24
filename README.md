@@ -167,7 +167,7 @@ Recupera os produtos do banco de dados.
     - *Uso Elevado de Memória:*
         - O processo de raspagem usa o Puppeteer, que pode consumir muita memória. Reduza o `chunkSize` se você experimentar alto uso de memória.
     - *Timeouts ou Desempenho Lento:*
-        - Problemas de rede podem causar timeouts. Certifique-se de que você tem uma conexão de internet estável.
+        - Problemas de rede podem causar timeouts. Certifique-se de que você tem uma conexão de internet estável. Reduza o `chunkSize` se necessário.
 
 - **Logs:**
 

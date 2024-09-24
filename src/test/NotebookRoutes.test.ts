@@ -1,6 +1,6 @@
 import request from 'supertest';
 import express from 'express';
-import notebookRoutes from '../routes/notebookRoutes';
+import notebookRoutes from '../routes/NotebookRoutes';
 import * as WebScrapingService from '../services/WebScrapingService';
 import * as DatabaseService from '../services/DatabaseService';
 import { getFilteredData } from "../services/DatabaseService";

@@ -4,7 +4,7 @@ Este projeto é para um teste da in8Holding que consiste um serviço de web scra
 
 ## Compatibilidade
 
-Este projeto foi desenvolvido e testado em um ambiente **Windows**, mas também foi executado com sucesso em um **MacBook Pro M3 Max**. Deve funcionar em ambientes **Linux** também, embora não tenha sido testado lá.
+Este projeto foi desenvolvido e testado em um ambiente **Windows**, mas também foi executado com sucesso em um **MacBook Pro M3 Max**. Deve funcionar em ambiente **Linux** também, embora não tenha sido testado lá.
 
 ## Tecnologias Utilizadas
 
@@ -79,7 +79,7 @@ Este comando irá construir e executar os contêineres Docker definidos no arqui
 
 ### Sincronizando Dados
 
-Para iniciar a raspagem de dados e salvá-los no banco de dados, acesse a rota `/notebook/sync`. Observe que este processo pode levar algum tempo (aproximadamente 2 minutos):
+Antes de iniciar verifique que a mensagem `Conexão bem sucedida.` apareceu no console. Para iniciar a web scraping de dados e salvá-los no banco de dados, acesse a rota `/notebook/sync`. Observe que este processo pode levar algum tempo (aproximadamente 2 minutos):
 
 ```bash
 http://localhost:3000/notebook/sync
@@ -129,7 +129,7 @@ Se você prefere executar a aplicação sem Docker, siga estes passos:
 
 ### `GET /notebook/sync`
 
-Inicia o processo de raspagem de dados e salva os dados no banco de dados.
+Inicia o processo de web scraping de dados e salva os dados no banco de dados.
 
 - **Parâmetros de Consulta:**
     - `chunkSize` (opcional): Número de itens a serem processados simultaneamente. O padrão é `30`.
@@ -146,7 +146,7 @@ Recupera os produtos do banco de dados.
 
 - **Considerações de Desempenho:**
 
-    - O processo de raspagem pode consumir muitos recursos. Ajuste o parâmetro `chunkSize` com base nas capacidades do seu sistema.
+    - O processo de web scraping pode consumir muitos recursos. Ajuste o parâmetro `chunkSize` com base nas capacidades do seu sistema.
     - O `chunkSize` padrão é `30`, mas se você encontrar problemas de desempenho, tente reduzi-lo para `10` ou `15`.
 
 - **Armazenamento de Dados:**
@@ -155,7 +155,7 @@ Recupera os produtos do banco de dados.
 
 - **Tratamento de Erros:**
 
-    - A aplicação inclui tratamento de erros para capturar e registrar problemas durante as etapas de raspagem e processamento de dados.
+    - A aplicação inclui tratamento de erros para capturar e registrar problemas durante as etapas de web scraping e processamento de dados.
     - Verifique a saída do console para quaisquer mensagens de erro se você encontrar problemas.
 
 ## Solução de Problemas
@@ -165,7 +165,7 @@ Recupera os produtos do banco de dados.
     - *Erros de Conexão com o Banco de Dados:*
         - Certifique-se de que seu servidor MySQL está em execução e que as credenciais no seu arquivo `.env` estão corretas.
     - *Uso Elevado de Memória:*
-        - O processo de raspagem usa o Puppeteer, que pode consumir muita memória. Reduza o `chunkSize` se você experimentar alto uso de memória.
+        - O processo de web scraping usa o Puppeteer, que pode consumir muita memória. Reduza o `chunkSize` se você experimentar alto uso de memória.
     - *Timeouts ou Desempenho Lento:*
         - Problemas de rede podem causar timeouts. Certifique-se de que você tem uma conexão de internet estável. Reduza o `chunkSize` se necessário.
 
